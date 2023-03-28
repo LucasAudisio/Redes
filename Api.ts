@@ -31,6 +31,10 @@ app.use(express.json());
 
 app.get('/', (_req , _res) => _res.send('Bienvenido a mi api para chat! Chat (Usuario, Mensaje) (MongoDB)'));
 
+//
+//Usuarios
+//
+
 //lista con los datos de todos los usuarios
 app.get("/usuarios", (_req,_res) => {
   _res.json(usuarios);
@@ -48,7 +52,8 @@ app.get("/usuarios/:id", (_req,_res) => {
 app.post("/usuarios", (_req,_res) => {
     for(let i: number = 0; i < usuarios.length; i++){
         if(usuarios[i].id == Number(_req.body.id)){
-            _res.send("no se pudo crear")
+            _res.send("no se pudo crear");
+            return;
         } 
     }
     const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, _req.body.estado, _req.body.contactosIDS);
@@ -62,7 +67,7 @@ app.delete("/usuarios/:id", (_req,_res) => {
         return item.id == Number(_req.params.id)
     })
     if (usuarioTemp){
-      delete usuarios[usuarios.indexOf(usuarioTemp)]
+        usuarios.splice(usuarios.indexOf(usuarioTemp), 1)
     }
     _res.status(204).send()
 })
@@ -106,6 +111,10 @@ app.patch("/usuarios/:id", (_req,_res) => {
     }
 })
 
+//
+//Mensajes
+//
+
 //lista con los datos de todos los mensajes
 app.get("/mensajes", (_req,_res) => {
     _res.json(mensajes);
@@ -114,8 +123,79 @@ app.get("/mensajes", (_req,_res) => {
 //datos del mensaje segun id
 app.get("/mensajes/:id", (_req,_res) => {
     _res.json(mensajes.find(item => {
-        return item.idMensaje == Number(_req.params.id)
+        return item.id == Number(_req.params.id)
     }));
 })
+
+//subir nuevo mensaje
+app.post("/mensajes", (_req,_res) => {
+    for(let i: number = 0; i < mensajes.length; i++){
+        if(mensajes[i].id == Number(_req.body.id)){
+            _res.send("no se pudo crear");
+            return;
+        } 
+    }
+    const mensajeTemp = new Mensaje(_req.body.id, _req.body.idUsuarioAutor, _req.body.idUsuarioReceptor, _req.body.mensaje, _req.body.fecha, _req.body.estado);
+    mensajes.push(mensajeTemp);
+    _res.json(mensajeTemp);
+})
+
+//borrar mensaje
+app.delete("/mensajes/:id", (_req,_res) => {
+    const mensajeTemp = mensajes.find(item => {
+        return item.id == Number(_req.params.id);
+    })
+    if (mensajeTemp){
+        mensajes.splice(mensajes.indexOf(mensajeTemp), 1)
+    }
+    _res.status(204).send();
+})
+
+//modificar todo el mensaje
+app.put("/mensajes/:id", (_req,_res) => {
+    const mensajeTemp = mensajes.find(item => {
+        return item.id == Number(_req.params.id);
+    })
+    if (mensajeTemp){
+        mensajeTemp.idUsuarioReceptor = _req.body.idUsuarioReceptor;
+        mensajeTemp.idUsuarioAutor = _req.body.idUsuarioAutor;
+        mensajeTemp.mensaje = _req.body.mensaje;
+        mensajeTemp.fecha = _req.body.fecha;
+        mensajeTemp.estado = _req.body.estado;
+    }
+    _res.json(mensajeTemp);
+})
+
+//modificar mensaje
+app.patch("/mensajes/:id", (_req,_res) => {
+    const mensajeTemp = mensajes.find(item => {
+        return item.id == Number(_req.params.id)
+    })
+    if (mensajeTemp){
+        if(_req.body.estado){
+            mensajeTemp.estado = _req.body.estado;
+        }
+        if(_req.body.fecha){
+            mensajeTemp.fecha = _req.body.fecha;
+        }
+        if(_req.body.idUsuarioAutor){
+            mensajeTemp.idUsuarioAutor = _req.body.idUsuarioAutor;
+        }
+        if(_req.body.idUsuarioReceptor){
+            mensajeTemp.idUsuarioReceptor = _req.body.idUsuarioReceptor;
+        }
+        if(_req.body.mensaje){
+            mensajeTemp.mensaje = _req.body.mensaje;
+        }
+        _res.json(mensajeTemp)
+    }
+    else{
+        _res.status(404).send()
+    }
+})
+
+//
+// Metodos personalizados
+//
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));

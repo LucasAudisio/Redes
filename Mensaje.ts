@@ -1,15 +1,15 @@
 import { estadoMensaje } from "./estadoMensaje";
 
 export class Mensaje{
-    idMensaje: Number;
+    id: Number;
     idUsuarioAutor: Number;
     idUsuarioReceptor: Number;
     mensaje: String;
     fecha: Date;
     estado: estadoMensaje;
 
-    constructor(idMensaje: Number, idUsuarioAutor: Number, idUsuarioReceptor: Number, mensaje: String, fecha: Date, estado: estadoMensaje){
-        this.idMensaje = idMensaje;
+    constructor(id: Number, idUsuarioAutor: Number, idUsuarioReceptor: Number, mensaje: String, fecha: Date, estado: estadoMensaje){
+        this.id = id;
         this.estado = estado;
         this.fecha = fecha;
         this.idUsuarioReceptor = idUsuarioReceptor;
