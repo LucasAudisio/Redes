@@ -43,7 +43,6 @@ app.get("/usuarios", (_req,_res) => {
 //datos del usuario segun id
 app.get("/usuarios/:id", (_req,_res) => {
     _res.json(usuarios.find(item => {
-        console.log(item.estado);
         return item.id == Number(_req.params.id)
     }));
 })
@@ -197,5 +196,22 @@ app.patch("/mensajes/:id", (_req,_res) => {
 //
 // Metodos personalizados
 //
+
+//Recibir chat entre 2 ususarios
+app.get("/mensajes/:idReceptor/:idAutor", (_req, _res) =>{
+    console.log("llego");
+    let chat:Array<Mensaje> = new Array<Mensaje>;
+    for(let i = 0; i < mensajes.length; i++){
+        if(mensajes[i].idUsuarioAutor == Number(_req.params.idAutor) &&
+        mensajes[i].idUsuarioReceptor == Number(_req.params.idReceptor)){
+            chat.push(mensajes[i]);
+        }
+        else if(mensajes[i].idUsuarioAutor == Number(_req.params.idReceptor) &&
+        mensajes[i].idUsuarioReceptor == Number(_req.params.idAutor)){
+            chat.push(mensajes[i]);
+        }
+    }
+    _res.json(chat);
+})
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));
