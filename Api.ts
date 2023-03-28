@@ -11,11 +11,11 @@ const port = 3000;
 let mensajes:Array<Mensaje> = new Array<Mensaje>
 let usuarios:Array<Usuario> = new Array<Usuario>
 
-usuarios.push(new Usuario(0, "nombre0", "avatar0", estadoUsuario.Conectado, [1, 2, 3]));
-usuarios.push(new Usuario(1, "nombre1", "avatar1", estadoUsuario.Desconectado, [0, 4, 3]));
-usuarios.push(new Usuario(2, "nombre2", "avatar2", estadoUsuario.Ausente, [0, 3, 5]));
-usuarios.push(new Usuario(3, "nombre3", "avatar3", estadoUsuario.Conectado, [2, 4, 5]));
-usuarios.push(new Usuario(4, "nombre4", "avatar4", estadoUsuario.Ausente, [0, 3, 2]));
+usuarios.push(new Usuario(0, "nombre0", "avatar0", estadoUsuario.Conectado, [1,2,4]));
+usuarios.push(new Usuario(1, "nombre1", "avatar1", estadoUsuario.Desconectado, [0,2,4]));
+usuarios.push(new Usuario(2, "nombre2", "avatar2", estadoUsuario.Ausente, [0,3,4]));
+usuarios.push(new Usuario(3, "nombre3", "avatar3", estadoUsuario.Conectado, [0,2,4]));
+usuarios.push(new Usuario(4, "nombre4", "avatar4", estadoUsuario.Ausente, [0,2,1]));
 
 mensajes.push(new Mensaje(0, 0, 1, "mensaje0", new Date(2023, 3, 15, 14, 23, 6), estadoMensaje.Leido));
 mensajes.push(new Mensaje(1, 1, 2, "mensaje1", new Date(2023, 3, 15, 15, 25, 6), estadoMensaje.NoEnviado));
@@ -212,6 +212,18 @@ app.get("/mensajes/:idReceptor/:idAutor", (_req, _res) =>{
         }
     }
     _res.json(chat);
+})
+
+//Buscar mensaje segun el texto
+app.get("/mensajesBuscarMensaje/:mensaje", (_req, _res) => {
+    console.log(1)
+    var mensajesEncontrados: Array<Mensaje> = new Array<Mensaje>;
+    for(let i:number = 0; i < mensajes.length;i++){
+        if(mensajes[i].mensaje.includes(_req.params.mensaje)){
+            mensajesEncontrados.push(mensajes[i]);
+        }
+    }
+    _res.json(mensajesEncontrados);
 })
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));
