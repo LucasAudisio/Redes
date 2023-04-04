@@ -122,7 +122,7 @@ app.get("/mensajes", (_req,_res) => {
 //datos del mensaje segun id
 app.get("/mensajes/:id", (_req,_res) => {
     _res.json(mensajes.find(item => {
-        return item.id == Number(_req.params.id)
+        return item.id == Number(_req.params.id);
     }));
 })
 
@@ -198,8 +198,7 @@ app.patch("/mensajes/:id", (_req,_res) => {
 //
 
 //Recibir chat entre 2 ususarios
-app.get("/mensajes/:idReceptor/:idAutor", (_req, _res) =>{
-    console.log("llego");
+app.get("/mensajes/recibirChat/:idReceptor/:idAutor", (_req, _res) =>{
     let chat:Array<Mensaje> = new Array<Mensaje>;
     for(let i = 0; i < mensajes.length; i++){
         if(mensajes[i].idUsuarioAutor == Number(_req.params.idAutor) &&
@@ -215,15 +214,41 @@ app.get("/mensajes/:idReceptor/:idAutor", (_req, _res) =>{
 })
 
 //Buscar mensaje segun el texto
-app.get("/mensajesBuscarMensaje/:mensaje", (_req, _res) => {
-    console.log(1)
+app.get("/mensajes/buscarMensaje/:idUsuario/:mensaje", (_req, _res) => {
     var mensajesEncontrados: Array<Mensaje> = new Array<Mensaje>;
     for(let i:number = 0; i < mensajes.length;i++){
-        if(mensajes[i].mensaje.includes(_req.params.mensaje)){
+        if(mensajes[i].mensaje.includes(_req.params.mensaje) && 
+        ((mensajes[i].idUsuarioAutor == Number(_req.params.idUsuario) || mensajes[i].idUsuarioReceptor == Number(_req.params.idUsuario)))){
             mensajesEncontrados.push(mensajes[i]);
         }
     }
     _res.json(mensajesEncontrados);
+})
+
+//Buscar usuario que no este en contactos
+app.get("/usuarios/buscarNuevoUsuario/:idUsuario/:nombreUsuario", (_req, _res) =>{
+    var usuarioAniadiendo: Usuario | undefined;
+    for(let i:number = 0; i < usuarios.length; i++){
+        if(usuarios[i].id == Number(_req.params.idUsuario)){
+            usuarioAniadiendo = usuarios[i];
+        }
+    }
+
+    var usuariosEncontrados: Array<Usuario> = new Array<Usuario>;
+
+    if(usuarioAniadiendo){
+        for(let i:number = 0; i < usuarios.length;i++){
+            if(usuarios[i].nombre.includes(_req.params.nombreUsuario) && 
+            !usuarioAniadiendo.contactosIDS.includes(usuarios[i].id) &&
+            usuarios[i] != usuarioAniadiendo){
+                usuariosEncontrados.push(usuarios[i]);
+            }
+        }
+        _res.json(usuariosEncontrados);
+    }
+    else{
+        _res.status(404).send();
+    }
 })
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));
