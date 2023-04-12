@@ -1,15 +1,24 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express'
+import * as swaggerDocument from "./swagger.json"
+
+//Clases
 import { Usuario } from './Usuario';
 import { Mensaje } from './Mensaje';
 import { estadoUsuario } from './estadoUsuario';
 import { estadoMensaje } from './estadoMensaje';
 
-const app: express.Application = express(); 
+//Rutas
+import { RutaDefault } from './Rutas/RutaDefault';
+import { RutasUsuarios } from './Rutas/RutasUsuarios';
+import { RutasMensajes } from './Rutas/RutasMensajes';
+
+const app: express.Application = express();
 
 const port = 3000;
 
-let mensajes:Array<Mensaje> = new Array<Mensaje>
-let usuarios:Array<Usuario> = new Array<Usuario>
+export let mensajes:Array<Mensaje> = new Array<Mensaje>
+export let usuarios:Array<Usuario> = new Array<Usuario>
 
 usuarios.push(new Usuario(0, "nombre0", "avatar0", estadoUsuario.Conectado, [1,2,4]));
 usuarios.push(new Usuario(1, "nombre1", "avatar1", estadoUsuario.Desconectado, [0,2,4]));
@@ -26,229 +35,13 @@ mensajes.push(new Mensaje(5, 3, 2, "mensaje5", new Date(2023, 3, 15, 19, 29, 6),
 mensajes.push(new Mensaje(6, 4, 3, "mensaje6", new Date(2023, 3, 15, 12, 30, 6), estadoMensaje.NoEnviado));
 mensajes.push(new Mensaje(7, 3, 4, "mensaje7", new Date(2023, 3, 15, 13, 29, 6), estadoMensaje.NoRecibido));
 
-
+//extensiones
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get('/', (_req , _res) => _res.send('Bienvenido a mi api para chat! Chat (Usuario, Mensaje) (MongoDB)'));
-
-//
-//Usuarios
-//
-
-//lista con los datos de todos los usuarios
-app.get("/usuarios", (_req,_res) => {
-  _res.json(usuarios);
-})
-
-//datos del usuario segun id
-app.get("/usuarios/:id", (_req,_res) => {
-    _res.json(usuarios.find(item => {
-        return item.id == Number(_req.params.id)
-    }));
-})
-
-//subir nuevo usuario
-app.post("/usuarios", (_req,_res) => {
-    for(let i: number = 0; i < usuarios.length; i++){
-        if(usuarios[i].id == Number(_req.body.id)){
-            _res.send("no se pudo crear");
-            return;
-        } 
-    }
-    const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, _req.body.estado, _req.body.contactosIDS);
-    usuarios.push(usuarioTemp);
-    _res.json(usuarioTemp);
-})
-
-//borrar usuario
-app.delete("/usuarios/:id", (_req,_res) => {
-    const usuarioTemp = usuarios.find(item => {
-        return item.id == Number(_req.params.id)
-    })
-    if (usuarioTemp){
-        usuarios.splice(usuarios.indexOf(usuarioTemp), 1)
-    }
-    _res.status(204).send()
-})
-
-//modificar todo el usuario
-app.put("/usuarios/:id", (_req,_res) => {
-    const usuarioTemp = usuarios.find(item => {
-        return item.id == Number(_req.params.id);
-    })
-    if (usuarioTemp){
-        usuarioTemp.contactosIDS = _req.body.contactosIDS;
-        usuarioTemp.estado = _req.body.estado;
-        usuarioTemp.avatar = _req.body.avatar;
-        usuarioTemp.nombre = _req.body.nombre;
-    }
-    _res.json(usuarioTemp);
-})
-
-//modificar usuario
-app.patch("/usuarios/:id", (_req,_res) => {
-    const usuarioTemp = usuarios.find(item => {
-        return item.id == Number(_req.params.id)
-    })
-    if (usuarioTemp){
-        if(_req.body.contactosIDS){
-            usuarioTemp.contactosIDS = _req.body.contactosIDS;
-        }
-        if(_req.body.avatar){
-            usuarioTemp.avatar = _req.body.avatar;
-        }
-        if(_req.body.nombre){
-            usuarioTemp.nombre = _req.body.nombre;
-        }
-        if(_req.body.estado){
-            usuarioTemp.estado = _req.body.estado;
-        }
-        _res.json(usuarioTemp)
-    }
-    else{
-        _res.status(404).send()
-    }
-})
-
-//
-//Mensajes
-//
-
-//lista con los datos de todos los mensajes
-app.get("/mensajes", (_req,_res) => {
-    _res.json(mensajes);
-})
-
-//datos del mensaje segun id
-app.get("/mensajes/:id", (_req,_res) => {
-    _res.json(mensajes.find(item => {
-        return item.id == Number(_req.params.id);
-    }));
-})
-
-//subir nuevo mensaje
-app.post("/mensajes", (_req,_res) => {
-    for(let i: number = 0; i < mensajes.length; i++){
-        if(mensajes[i].id == Number(_req.body.id)){
-            _res.send("no se pudo crear");
-            return;
-        } 
-    }
-    const mensajeTemp = new Mensaje(_req.body.id, _req.body.idUsuarioAutor, _req.body.idUsuarioReceptor, _req.body.mensaje, _req.body.fecha, _req.body.estado);
-    mensajes.push(mensajeTemp);
-    _res.json(mensajeTemp);
-})
-
-//borrar mensaje
-app.delete("/mensajes/:id", (_req,_res) => {
-    const mensajeTemp = mensajes.find(item => {
-        return item.id == Number(_req.params.id);
-    })
-    if (mensajeTemp){
-        mensajes.splice(mensajes.indexOf(mensajeTemp), 1)
-    }
-    _res.status(204).send();
-})
-
-//modificar todo el mensaje
-app.put("/mensajes/:id", (_req,_res) => {
-    const mensajeTemp = mensajes.find(item => {
-        return item.id == Number(_req.params.id);
-    })
-    if (mensajeTemp){
-        mensajeTemp.idUsuarioReceptor = _req.body.idUsuarioReceptor;
-        mensajeTemp.idUsuarioAutor = _req.body.idUsuarioAutor;
-        mensajeTemp.mensaje = _req.body.mensaje;
-        mensajeTemp.fecha = _req.body.fecha;
-        mensajeTemp.estado = _req.body.estado;
-    }
-    _res.json(mensajeTemp);
-})
-
-//modificar mensaje
-app.patch("/mensajes/:id", (_req,_res) => {
-    const mensajeTemp = mensajes.find(item => {
-        return item.id == Number(_req.params.id)
-    })
-    if (mensajeTemp){
-        if(_req.body.estado){
-            mensajeTemp.estado = _req.body.estado;
-        }
-        if(_req.body.fecha){
-            mensajeTemp.fecha = _req.body.fecha;
-        }
-        if(_req.body.idUsuarioAutor){
-            mensajeTemp.idUsuarioAutor = _req.body.idUsuarioAutor;
-        }
-        if(_req.body.idUsuarioReceptor){
-            mensajeTemp.idUsuarioReceptor = _req.body.idUsuarioReceptor;
-        }
-        if(_req.body.mensaje){
-            mensajeTemp.mensaje = _req.body.mensaje;
-        }
-        _res.json(mensajeTemp)
-    }
-    else{
-        _res.status(404).send()
-    }
-})
-
-//
-// Metodos personalizados
-//
-
-//Recibir chat entre 2 ususarios
-app.get("/mensajes/recibirChat/:idReceptor/:idAutor", (_req, _res) =>{
-    let chat:Array<Mensaje> = new Array<Mensaje>;
-    for(let i = 0; i < mensajes.length; i++){
-        if(mensajes[i].idUsuarioAutor == Number(_req.params.idAutor) &&
-        mensajes[i].idUsuarioReceptor == Number(_req.params.idReceptor)){
-            chat.push(mensajes[i]);
-        }
-        else if(mensajes[i].idUsuarioAutor == Number(_req.params.idReceptor) &&
-        mensajes[i].idUsuarioReceptor == Number(_req.params.idAutor)){
-            chat.push(mensajes[i]);
-        }
-    }
-    _res.json(chat);
-})
-
-//Buscar mensaje segun el texto
-app.get("/mensajes/buscarMensaje/:idUsuario/:mensaje", (_req, _res) => {
-    var mensajesEncontrados: Array<Mensaje> = new Array<Mensaje>;
-    for(let i:number = 0; i < mensajes.length;i++){
-        if(mensajes[i].mensaje.includes(_req.params.mensaje) && 
-        ((mensajes[i].idUsuarioAutor == Number(_req.params.idUsuario) || mensajes[i].idUsuarioReceptor == Number(_req.params.idUsuario)))){
-            mensajesEncontrados.push(mensajes[i]);
-        }
-    }
-    _res.json(mensajesEncontrados);
-})
-
-//Buscar usuario que no este en contactos
-app.get("/usuarios/buscarNuevoUsuario/:idUsuario/:nombreUsuario", (_req, _res) =>{
-    var usuarioAniadiendo: Usuario | undefined;
-    for(let i:number = 0; i < usuarios.length; i++){
-        if(usuarios[i].id == Number(_req.params.idUsuario)){
-            usuarioAniadiendo = usuarios[i];
-        }
-    }
-
-    var usuariosEncontrados: Array<Usuario> = new Array<Usuario>;
-
-    if(usuarioAniadiendo){
-        for(let i:number = 0; i < usuarios.length;i++){
-            if(usuarios[i].nombre.includes(_req.params.nombreUsuario) && 
-            !usuarioAniadiendo.contactosIDS.includes(usuarios[i].id) &&
-            usuarios[i] != usuarioAniadiendo){
-                usuariosEncontrados.push(usuarios[i]);
-            }
-        }
-        _res.json(usuariosEncontrados);
-    }
-    else{
-        _res.status(404).send();
-    }
-})
+//Rutas
+app.use(RutaDefault);
+app.use(RutasMensajes);
+app.use(RutasUsuarios);
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));

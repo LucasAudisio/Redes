@@ -1,0 +1,676 @@
+{
+    "openapi" : "3.0.1",
+    "info" : {
+      "title" : "Chat API",
+      "description" : "API para una aplicacion para chat",
+      "version" : "0.1"
+    },
+    "servers" : [ {
+      "url" : "http://localhost:3000"
+    } ],
+    "tags" : [ {
+      "name" : "usuarios",
+      "description" : "Este endpoint se encarga de manejar los datos relacionados a los usuarios"
+    }, {
+      "name" : "mensajes",
+      "description" : "Este endpoint se encarga de manejar los datos relacionados a los mensajes"
+    } ],
+    "paths" : {
+      "/mensajes/{idMensaje}" : {
+        "get" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Devuelve los datos del mensaje segun id",
+          "parameters" : [ {
+            "name" : "idMensaje",
+            "in" : "path",
+            "description" : "Id del mensaje a buscar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se recibio los datos correctamente",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/mensaje"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "put" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Modifica todo el mensaje segun el id",
+          "parameters" : [ {
+            "name" : "idMensaje",
+            "in" : "path",
+            "description" : "id del mensaje a modificar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/mensajeSinID"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se modifico correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/mensaje"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "patch" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Modifica parte del mensaje segun el id",
+          "parameters" : [ {
+            "name" : "idMensaje",
+            "in" : "path",
+            "description" : "id del mensaje a modificar parcialmente",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/mensajeSinID"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se modifico correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/mensaje"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "delete" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Borra mensaje",
+          "parameters" : [ {
+            "name" : "idMensaje",
+            "in" : "path",
+            "description" : "id del mensaje a borrar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "204" : {
+              "description" : "(OK) mensaje borrado correctamente"
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/mensajes" : {
+        "get" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Obtiene lista de todos los mensajes",
+          "responses" : {
+            "200" : {
+              "description" : "(OK) lista recibida correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/listaMensajes"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "post" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Sube nuevo mensaje",
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/mensaje"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) mensaje subido correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/mensaje"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/mensajes/recibirChat/{idUsuario1}/{idUsuario2}" : {
+        "get" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Devuelve el chat entre 2 usuarios",
+          "parameters" : [ {
+            "name" : "idUsuario1",
+            "in" : "path",
+            "description" : "Id del primer usuario del chat",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          }, {
+            "name" : "idUsuario2",
+            "in" : "path",
+            "description" : "Id del segundo usuario del chat",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se recibio los datos correctamente",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/listaMensajes"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/mensajes/buscarMensaje/{idUsuario}/{mensaje}" : {
+        "get" : {
+          "tags" : [ "mensajes" ],
+          "description" : "Devuelve una lista de los posibles mensajes que esta buscando el usuario",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario que busca el mensaje",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          }, {
+            "name" : "mensaje",
+            "in" : "path",
+            "description" : "mensaje a buscar",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se recibio los datos correctamente",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/listaMensajes"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/usuarios/{idUsuario}" : {
+        "get" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Devuelve los datos del usuario segun id",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario a buscar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se envio los datos correctamente",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/usuario"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "put" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Modifica todo el usuario segun el id",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario a modiificar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/usuarioSinID"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se modifico correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/usuario"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "patch" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Modifica parte del usuario segun el id",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario a modificar parcialmente",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/usuarioSinID"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) se modifico correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/usuario"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "delete" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Borra un usuario segun el id",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario a borrar",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "204" : {
+              "description" : "(OK) usuario borrado correctamente"
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/usuarios" : {
+        "get" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Obtiene lista de todos los usuarios",
+          "responses" : {
+            "200" : {
+              "description" : "(OK) lista recibida correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/listaUsuarios"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "post" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Sube un nuevo usuario",
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/usuario"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "(OK) usuario subido correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/usuario"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      },
+      "/usuarios/buscarNuevoUsuario/{idUsuario}/{nombreUsuario}" : {
+        "get" : {
+          "tags" : [ "usuarios" ],
+          "description" : "Devuelve una lista con los posibles nuevos contactos",
+          "parameters" : [ {
+            "name" : "idUsuario",
+            "in" : "path",
+            "description" : "Id del usuario que busca al nuevo contacto",
+            "required" : true,
+            "schema" : {
+              "type" : "integer"
+            }
+          }, {
+            "name" : "nombreUsuario",
+            "in" : "path",
+            "description" : "nombre del usuario a buscar",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "(OK) lista recibida correctamente",
+              "content" : {
+                "application/json; charset=utf-8" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/listaUsuarios"
+                  }
+                }
+              }
+            }
+          },
+          "servers" : [ {
+            "url" : "http://localhost:3000"
+          } ]
+        },
+        "servers" : [ {
+          "url" : "http://localhost:3000"
+        } ]
+      }
+    },
+    "components" : {
+      "schemas" : {
+        "mensaje" : {
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "type" : "integer",
+              "description" : "id mensaje"
+            },
+            "mensaje" : {
+              "type" : "string",
+              "description" : "texto del mensaje"
+            },
+            "idUsuarioAutor" : {
+              "type" : "integer",
+              "description" : "id del usuario que mando el mensaje"
+            },
+            "idUsuarioReceptor" : {
+              "type" : "integer",
+              "description" : "id del usuario que recibio el mensaje"
+            },
+            "fecha" : {
+              "type" : "string",
+              "description" : "lista de contactos"
+            },
+            "estado" : {
+              "type" : "integer",
+              "description" : "codigo numerico del estado(0 Enviado, 1 NoRecibido, 2 Recibido, 3 Leido)"
+            }
+          }
+        },
+        "mensajeSinID" : {
+          "type" : "object",
+          "properties" : {
+            "mensaje" : {
+              "type" : "string",
+              "description" : "texto del mensaje"
+            },
+            "idUsuarioAutor" : {
+              "type" : "integer",
+              "description" : "id del usuario que mando el mensaje"
+            },
+            "idUsuarioReceptor" : {
+              "type" : "integer",
+              "description" : "id del usuario que recibio el mensaje"
+            },
+            "fecha" : {
+              "type" : "string",
+              "description" : "lista de contactos"
+            },
+            "estado" : {
+              "type" : "integer",
+              "description" : "codigo numerico del estado(0 Enviado, 1 NoRecibido, 2 Recibido, 3 Leido)"
+            }
+          }
+        },
+        "listaMensajes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object"
+          },
+          "properties" : {
+            "id" : {
+              "type" : "integer",
+              "description" : "id mensaje"
+            },
+            "mensaje" : {
+              "type" : "string",
+              "description" : "texto del mensaje"
+            },
+            "idUsuarioAutor" : {
+              "type" : "integer",
+              "description" : "id del usuario que mando el mensaje"
+            },
+            "idUsuarioReceptor" : {
+              "type" : "integer",
+              "description" : "id del usuario que recibio el mensaje"
+            },
+            "fecha" : {
+              "type" : "string",
+              "description" : "lista de contactos"
+            },
+            "estado" : {
+              "type" : "integer",
+              "description" : "codigo numerico del estado(0 Enviado, 1 NoRecibido, 2 Recibido, 3 Leido)"
+            }
+          }
+        },
+        "usuario" : {
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "type" : "integer",
+              "description" : "id usuario nuevo"
+            },
+            "nombre" : {
+              "type" : "string",
+              "description" : "nombre usuario nuevo"
+            },
+            "avatar" : {
+              "type" : "string",
+              "description" : "avatar usuario nuevo"
+            },
+            "estado" : {
+              "type" : "integer",
+              "description" : "codigo numerico del estado(0 Conectado, 1 Desconectado, 2 Ausente)"
+            },
+            "contactosIDS" : {
+              "type" : "array",
+              "description" : "lista de contactos",
+              "items" : {
+                "type" : "integer"
+              }
+            }
+          }
+        },
+        "usuarioSinID" : {
+          "type" : "object",
+          "properties" : {
+            "nombre" : {
+              "type" : "string",
+              "description" : "nombre usuario nuevo"
+            },
+            "avatar" : {
+              "type" : "string",
+              "description" : "avatar usuario nuevo"
+            },
+            "estado" : {
+              "type" : "integer",
+              "description" : "codigo numerico del estado(0 Conectado, 1 Desconectado, 2 Ausente)"
+            },
+            "contactosIDS" : {
+              "type" : "array",
+              "description" : "lista de contactos",
+              "items" : {
+                "type" : "integer"
+              }
+            }
+          }
+        },
+        "listaUsuarios" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer",
+                "description" : "id usuario nuevo"
+              },
+              "nombre" : {
+                "type" : "string",
+                "description" : "nombre usuario nuevo"
+              },
+              "avatar" : {
+                "type" : "string",
+                "description" : "avatar usuario nuevo"
+              },
+              "estado" : {
+                "type" : "integer",
+                "description" : "codigo numerico del estado(0 Conectado, 1 Desconectado, 2 Ausente)"
+              },
+              "contactosIDS" : {
+                "type" : "array",
+                "description" : "lista de contactos",
+                "items" : {
+                  "type" : "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
