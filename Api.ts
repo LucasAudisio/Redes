@@ -15,7 +15,7 @@ import { RutasMensajes } from './Rutas/RutasMensajes';
 
 const app: express.Application = express();
 
-const port = 3000;
+const port = 3002;
 
 export let mensajes:Array<Mensaje> = new Array<Mensaje>
 export let usuarios:Array<Usuario> = new Array<Usuario>
@@ -45,3 +45,6 @@ app.use(RutasMensajes);
 app.use(RutasUsuarios);
 
 app.listen(port, () => console.log(`Escuchando en el puerto ${port}!`));
+
+
+

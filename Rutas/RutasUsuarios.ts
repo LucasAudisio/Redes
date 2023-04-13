@@ -7,6 +7,7 @@ import { Mensaje } from '../Mensaje';
 export const RutasUsuarios = Router();
 
 RutasUsuarios.get("/usuarios", (_req,_res) => {
+    run();
 _res.json(usuarios);
   })
   
@@ -133,3 +134,26 @@ RutasUsuarios.get("/usuarios/:idUsuario/buscarNuevoUsuario/:nombreUsuario", (_re
         _res.status(404).send();
     }
 })
+
+
+
+//test
+
+const { MongoClient } = require("mongodb");
+const url = "mongodb://localhost:27017/Chat";
+const client = new MongoClient(url)
+
+export async function run() {
+    try {
+      const database = client.db('Chat');
+      const usuarios = database.collection('Usuario');
+      // Query for a movie that has the title 'Back to the Future'
+      const query = { id: 2 };
+      const usuario = await usuarios.findOne(query);
+      console.log(usuario);
+    } finally {
+      // Ensures that the client will close when you finish/error
+      await client.close();
+    }
+  }
+  run().catch(console.dir);
