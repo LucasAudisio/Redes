@@ -3,83 +3,104 @@ import { usuarios } from '../Api';
 import { Usuario } from '../Usuario';
 import { mensajes } from '../Api';
 import { Mensaje } from '../Mensaje';
+import { AccesoUsuario } from '../AccesosDB/AccesoUsuario';
+import { MongoClient } from 'mongodb';
+import { estadoUsuario } from '../estadoUsuario';
+
+const url: string = "mongodb://localhost:27017/Chat";
+const client = new MongoClient(url);
+const database = client.db("Chat")
+
+var accesoUsuario: AccesoUsuario = new AccesoUsuario(url, database, database.collection("Usuario"))
 
 export const RutasUsuarios = Router();
 
 RutasUsuarios.get("/usuarios", (_req,_res) => {
-    run();
-_res.json(usuarios);
-  })
+    accesoUsuario.getUsuarios().then((v)=>{
+        _res.send(v);
+    })
+})
   
-  //datos del usuario segun id
-  RutasUsuarios.get("/usuarios/:id", (_req,_res) => {
-      _res.json(usuarios.find(item => {
-          return item.id == Number(_req.params.id)
-      }));
-  })
+//datos del usuario segun id
+RutasUsuarios.get("/usuarios/:id", (_req,_res) => {
+    accesoUsuario.getUsuario(Number(_req.params.id)).then((v)=>{
+        _res.send(v);
+    })
+})
   
-  //subir nuevo usuario
-  RutasUsuarios.post("/usuarios", (_req,_res) => {
-      for(let i: number = 0; i < usuarios.length; i++){
-          if(usuarios[i].id == Number(_req.body.id)){
-              _res.send("no se pudo crear");
-              return;
-          } 
-      }
-      const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, _req.body.estado, _req.body.contactosIDS);
-      usuarios.push(usuarioTemp);
-      _res.json(usuarioTemp);
-  })
+//subir nuevo usuario
+RutasUsuarios.post("/usuarios", (_req,_res) => {
+    accesoUsuario.getUsuario(Number(_req.body.id)).then((v)=>{
+        if(v != undefined){
+            _res.send("no se pudo crear");
+            return;
+        }
+        else{
+            const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, _req.body.estado, _req.body.contactosIDS);
+            accesoUsuario.subirUsuario(usuarioTemp);
+            _res.json(usuarioTemp);
+        }
+    })
+})
   
-  //borrar usuario
-  RutasUsuarios.delete("/usuarios/:id", (_req,_res) => {
-      const usuarioTemp = usuarios.find(item => {
-          return item.id == Number(_req.params.id)
-      })
-      if (usuarioTemp){
-          usuarios.splice(usuarios.indexOf(usuarioTemp), 1)
-      }
-      _res.status(204).send()
-  })
-  
-  //modificar todo el usuario
-  RutasUsuarios.put("/usuarios/:id", (_req,_res) => {
-      const usuarioTemp = usuarios.find(item => {
-          return item.id == Number(_req.params.id);
-      })
-      if (usuarioTemp){
-          usuarioTemp.contactosIDS = _req.body.contactosIDS;
-          usuarioTemp.estado = _req.body.estado;
-          usuarioTemp.avatar = _req.body.avatar;
-          usuarioTemp.nombre = _req.body.nombre;
-      }
-      _res.json(usuarioTemp);
-  })
-  
-  //modificar usuario
-  RutasUsuarios.patch("/usuarios/:id", (_req,_res) => {
-      const usuarioTemp = usuarios.find(item => {
-          return item.id == Number(_req.params.id)
-      })
-      if (usuarioTemp){
-          if(_req.body.contactosIDS){
-              usuarioTemp.contactosIDS = _req.body.contactosIDS;
-          }
-          if(_req.body.avatar){
-              usuarioTemp.avatar = _req.body.avatar;
-          }
-          if(_req.body.nombre){
-              usuarioTemp.nombre = _req.body.nombre;
-          }
-          if(_req.body.estado){
-              usuarioTemp.estado = _req.body.estado;
-          }
-          _res.json(usuarioTemp)
-      }
-      else{
-          _res.status(404).send()
-      }
-  })
+//borrar usuario
+RutasUsuarios.delete("/usuarios/:id", (_req,_res) => {
+    accesoUsuario.getUsuario(Number(_req.params.id)).then((v)=>{
+        if(v == undefined){
+            _res.send("no existe");
+            return;
+        }
+        else{
+            accesoUsuario.borrarUsuario(Number(_req.params.id));
+            _res.status(204).send();
+        }
+    })
+})
+
+//modificar todo el usuario
+RutasUsuarios.put("/usuarios/:id", (_req,_res) => {
+    accesoUsuario.getUsuario(Number(_req.params.id)).then((v)=>{
+        if(v == undefined){
+            _res.send("no existe");
+            return;
+        }
+        else{
+            const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, 
+                _req.body.estado, _req.body.contactosIDS);
+            console.log(usuarioTemp);
+            accesoUsuario.modificarUsuario(usuarioTemp);
+            _res.json(usuarioTemp);
+        }
+    })
+})
+
+//modificar usuario
+RutasUsuarios.patch("/usuarios/:id", (_req,_res) => {
+    accesoUsuario.getUsuario(Number(_req.params.id)).then((v)=>{
+        if(v == undefined){
+            _res.send("no existe");
+            return;
+        }
+        else{
+            //const numEnum = v.estado
+            var usuarioTemp = new Usuario(v.id, v.nombre, v.avatar, v.estado, v.contactosIDS);
+            if(_req.body.contactosIDS){
+                usuarioTemp.contactosIDS = _req.body.contactosIDS;
+            }
+            if(_req.body.avatar){
+                usuarioTemp.avatar = _req.body.avatar;
+            }
+            if(_req.body.nombre){
+                usuarioTemp.nombre = _req.body.nombre;
+            } 
+            if(_req.body.estado){
+                usuarioTemp.estado = _req.body.estado;
+            }
+            accesoUsuario.modificarUsuario(usuarioTemp);
+            _res.json(usuarioTemp);
+        }
+    })
+})
 
 //Recibir chat entre 2 ususarios
 RutasUsuarios.get("/usuarios/:idReceptor/:idAutor/recibirChat", (_req, _res) =>{
@@ -134,26 +155,3 @@ RutasUsuarios.get("/usuarios/:idUsuario/buscarNuevoUsuario/:nombreUsuario", (_re
         _res.status(404).send();
     }
 })
-
-
-
-//test
-
-const { MongoClient } = require("mongodb");
-const url = "mongodb://localhost:27017/Chat";
-const client = new MongoClient(url)
-
-export async function run() {
-    try {
-      const database = client.db('Chat');
-      const usuarios = database.collection('Usuario');
-      // Query for a movie that has the title 'Back to the Future'
-      const query = { id: 2 };
-      const usuario = await usuarios.findOne(query);
-      console.log(usuario);
-    } finally {
-      // Ensures that the client will close when you finish/error
-      await client.close();
-    }
-  }
-  run().catch(console.dir);

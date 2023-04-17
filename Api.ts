@@ -15,7 +15,7 @@ import { RutasMensajes } from './Rutas/RutasMensajes';
 
 const app: express.Application = express();
 
-const port = 3002;
+const port = 3000;
 
 export let mensajes:Array<Mensaje> = new Array<Mensaje>
 export let usuarios:Array<Usuario> = new Array<Usuario>
