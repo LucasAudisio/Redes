@@ -5,16 +5,16 @@ import { mensajes } from '../Api';
 import { Mensaje } from '../Mensaje';
 import { AccesoUsuario } from '../AccesosDB/AccesoUsuario';
 import { MongoClient } from 'mongodb';
-import { estadoUsuario } from '../estadoUsuario';
 
 const url: string = "mongodb://localhost:27017/Chat";
 const client = new MongoClient(url);
-const database = client.db("Chat")
+const database = client.db("Chat");
 
 var accesoUsuario: AccesoUsuario = new AccesoUsuario(url, database, database.collection("Usuario"))
 
 export const RutasUsuarios = Router();
 
+//lista de usuarios
 RutasUsuarios.get("/usuarios", (_req,_res) => {
     accesoUsuario.getUsuarios().then((v)=>{
         _res.send(v);
@@ -65,7 +65,7 @@ RutasUsuarios.put("/usuarios/:id", (_req,_res) => {
             return;
         }
         else{
-            const usuarioTemp = new Usuario(_req.body.id, _req.body.nombre, _req.body.avatar, 
+            const usuarioTemp = new Usuario(Number(_req.params.id), _req.body.nombre, _req.body.avatar, 
                 _req.body.estado, _req.body.contactosIDS);
             console.log(usuarioTemp);
             accesoUsuario.modificarUsuario(usuarioTemp);
@@ -82,7 +82,6 @@ RutasUsuarios.patch("/usuarios/:id", (_req,_res) => {
             return;
         }
         else{
-            //const numEnum = v.estado
             var usuarioTemp = new Usuario(v.id, v.nombre, v.avatar, v.estado, v.contactosIDS);
             if(_req.body.contactosIDS){
                 usuarioTemp.contactosIDS = _req.body.contactosIDS;

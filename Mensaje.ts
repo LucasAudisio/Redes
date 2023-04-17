@@ -5,10 +5,20 @@ export class Mensaje{
     idUsuarioAutor: Number;
     idUsuarioReceptor: Number;
     mensaje: String;
-    fecha: Date;
+    fecha: {
+        año: number,
+        mes: number,
+        dia: number,
+        minuto: number
+    };
     estado: estadoMensaje;
 
-    constructor(id: Number, idUsuarioAutor: Number, idUsuarioReceptor: Number, mensaje: String, fecha: Date, estado: estadoMensaje){
+    constructor(id: Number, idUsuarioAutor: Number, idUsuarioReceptor: Number, mensaje: String, fecha: {
+        año: number,
+        mes: number,
+        dia: number,
+        minuto: number
+    }, estado: estadoMensaje){
         this.id = id;
         this.estado = estado;
         this.fecha = fecha;
