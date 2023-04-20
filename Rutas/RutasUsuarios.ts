@@ -71,7 +71,6 @@ RutasUsuarios.put("/usuarios/:id", (_req,_res) => {
         else{
             const usuarioTemp = new Usuario(Number(_req.params.id), _req.body.nombre, _req.body.avatar, 
                 _req.body.estado, _req.body.contactosIDS);
-            console.log(usuarioTemp);
             accesoUsuario.modificarUsuario(usuarioTemp);
             _res.json(usuarioTemp);
         }
@@ -117,7 +116,6 @@ RutasUsuarios.get("/usuarios/:idReceptor/:idAutor/recibirChat", (_req, _res) =>{
 RutasUsuarios.get("/usuarios/:idUsuario/buscarMensaje/:mensaje", (_req, _res) => {
     accesoMensaje.mensajesSegunTexto(Number(_req.params.idUsuario), _req.params.mensaje)
       .then((v) => {
-        console.log(v)
         _res.json(v);
     });
 })
@@ -125,30 +123,6 @@ RutasUsuarios.get("/usuarios/:idUsuario/buscarMensaje/:mensaje", (_req, _res) =>
 //Buscar usuario que no este en contactos
 RutasUsuarios.get("/usuarios/:idUsuario/buscarNuevoUsuario/:nombreUsuario", (_req, _res) =>{
     accesoUsuario.buscarUsuarioNuevo(Number(_req.params.idUsuario), _req.params.nombreUsuario).then((v) => {
-        //console.log(JSON.parse(JSON.stringify(v)))
         _res.json(v);
     });
-    
-    /*var usuarioAniadiendo: Usuario | undefined;
-    for(let i:number = 0; i < usuarios.length; i++){
-        if(usuarios[i].id == Number(_req.params.idUsuario)){
-            usuarioAniadiendo = usuarios[i];
-        }
-    }
-
-    var usuariosEncontrados: Array<Usuario> = new Array<Usuario>;
-
-    if(usuarioAniadiendo){
-        for(let i:number = 0; i < usuarios.length;i++){
-            if(usuarios[i].nombre.includes(_req.params.nombreUsuario) && 
-            !usuarioAniadiendo.contactosIDS.includes(usuarios[i].id) &&
-            usuarios[i] != usuarioAniadiendo){
-                usuariosEncontrados.push(usuarios[i]);
-            }
-        }
-        _res.json(usuariosEncontrados);
-    }
-    else{
-        _res.status(404).send();
-    }*/
 })
