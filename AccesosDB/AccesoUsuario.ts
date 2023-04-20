@@ -1,4 +1,4 @@
-import { Collection, Db } from "mongodb";
+import { Collection, Db, FindCursor } from "mongodb";
 import { Usuario } from "../Usuario";
 
 export class AccesoUsuario{
@@ -38,5 +38,10 @@ export class AccesoUsuario{
         //eliminar de la base de datos
         const filtro = { id: id };
         this.collection.findOneAndDelete(filtro);
+    }
+
+    public async buscarUsuarioNuevo(id: number, nombre: String){
+        const usuario = await this.collection.findOne({"id": id});
+        return await this.collection.find({$and: [{"nombre": {$regex: "e", $options: "i"}}, {"id": {$nin: usuario?.contactosIDS}}]}).toArray();
     }
 }

@@ -5,12 +5,16 @@ import { mensajes } from '../Api';
 import { Mensaje } from '../Mensaje';
 import { AccesoUsuario } from '../AccesosDB/AccesoUsuario';
 import { MongoClient } from 'mongodb';
+import { AccesoMensaje } from '../AccesosDB/AccesoMensaje';
 
 const url: string = "mongodb://localhost:27017/Chat";
 const client = new MongoClient(url);
 const database = client.db("Chat");
 
 var accesoUsuario: AccesoUsuario = new AccesoUsuario(url, database, database.collection("Usuario"))
+
+var accesoMensaje: AccesoMensaje = new AccesoMensaje(url, database, database.collection("Mensaje"))
+
 
 export const RutasUsuarios = Router();
 
@@ -103,35 +107,29 @@ RutasUsuarios.patch("/usuarios/:id", (_req,_res) => {
 
 //Recibir chat entre 2 ususarios
 RutasUsuarios.get("/usuarios/:idReceptor/:idAutor/recibirChat", (_req, _res) =>{
-    let chat:Array<Mensaje> = new Array<Mensaje>;
-    for(let i = 0; i < mensajes.length; i++){
-        if(mensajes[i].idUsuarioAutor == Number(_req.params.idAutor) &&
-        mensajes[i].idUsuarioReceptor == Number(_req.params.idReceptor)){
-            chat.push(mensajes[i]);
-        }
-        else if(mensajes[i].idUsuarioAutor == Number(_req.params.idReceptor) &&
-        mensajes[i].idUsuarioReceptor == Number(_req.params.idAutor)){
-            chat.push(mensajes[i]);
-        }
-    }
-    _res.json(chat);
+    accesoMensaje.chatEntre2Usuarios(Number(_req.params.idAutor), Number(_req.params.idReceptor))
+        .then((v) => {
+            _res.json(v);
+        })
 })
 
 //Buscar mensaje segun el texto
 RutasUsuarios.get("/usuarios/:idUsuario/buscarMensaje/:mensaje", (_req, _res) => {
-    var mensajesEncontrados: Array<Mensaje> = new Array<Mensaje>;
-    for(let i:number = 0; i < mensajes.length;i++){
-        if(mensajes[i].mensaje.includes(_req.params.mensaje) && 
-        ((mensajes[i].idUsuarioAutor == Number(_req.params.idUsuario) || mensajes[i].idUsuarioReceptor == Number(_req.params.idUsuario)))){
-            mensajesEncontrados.push(mensajes[i]);
-        }
-    }
-    _res.json(mensajesEncontrados);
+    accesoMensaje.mensajesSegunTexto(Number(_req.params.idUsuario), _req.params.mensaje)
+      .then((v) => {
+        console.log(v)
+        _res.json(v);
+    });
 })
 
 //Buscar usuario que no este en contactos
 RutasUsuarios.get("/usuarios/:idUsuario/buscarNuevoUsuario/:nombreUsuario", (_req, _res) =>{
-    var usuarioAniadiendo: Usuario | undefined;
+    accesoUsuario.buscarUsuarioNuevo(Number(_req.params.idUsuario), _req.params.nombreUsuario).then((v) => {
+        //console.log(JSON.parse(JSON.stringify(v)))
+        _res.json(v);
+    });
+    
+    /*var usuarioAniadiendo: Usuario | undefined;
     for(let i:number = 0; i < usuarios.length; i++){
         if(usuarios[i].id == Number(_req.params.idUsuario)){
             usuarioAniadiendo = usuarios[i];
@@ -152,5 +150,5 @@ RutasUsuarios.get("/usuarios/:idUsuario/buscarNuevoUsuario/:nombreUsuario", (_re
     }
     else{
         _res.status(404).send();
-    }
+    }*/
 })
