@@ -522,8 +522,9 @@
               "description" : "id del usuario que recibio el mensaje"
             },
             "fecha" : {
-              "type" : "string",
-              "description" : "lista de contactos"
+              "schema":{
+                "$ref":"#/components/schemas/fecha"
+              }
             },
             "estado" : {
               "type" : "integer",
@@ -547,8 +548,9 @@
               "description" : "id del usuario que recibio el mensaje"
             },
             "fecha" : {
-              "type" : "string",
-              "description" : "lista de contactos"
+              "schema":{
+                "$ref": "#/components/schemas/fecha"
+              }
             },
             "estado" : {
               "type" : "integer",
@@ -579,8 +581,9 @@
               "description" : "id del usuario que recibio el mensaje"
             },
             "fecha" : {
-              "type" : "string",
-              "description" : "lista de contactos"
+              "schema":{
+                "$ref": "#/components/schemas/fecha"
+              }
             },
             "estado" : {
               "type" : "integer",
@@ -670,7 +673,32 @@
               }
             }
           }
+        },
+        "fecha":{
+          "type": "object",
+          "properties":{
+            "año":{
+              "type": "integer",
+              "description":"año en el que se escirbio el mensaje"
+            },
+            "mes":{
+              "type": "integer",
+              "description":"mes en el que se escirbio el mensaje"
+            },
+            "dia":{
+              "type": "integer",
+              "description":"dia en el que se escirbio el mensaje"
+            },
+            "hora":{
+              "type": "integer",
+              "description":"hora en el que se escirbio el mensaje"
+            },
+            "minuto":{
+              "type": "integer",
+              "description":"minuto en el que se escirbio el mensaje"
+            }
+          }
         }
-      }
     }
   }
+}

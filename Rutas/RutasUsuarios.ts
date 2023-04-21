@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { usuarios } from '../Api';
 import { Usuario } from '../Usuario';
-import { mensajes } from '../Api';
-import { Mensaje } from '../Mensaje';
 import { AccesoUsuario } from '../AccesosDB/AccesoUsuario';
 import { MongoClient } from 'mongodb';
 import { AccesoMensaje } from '../AccesosDB/AccesoMensaje';
