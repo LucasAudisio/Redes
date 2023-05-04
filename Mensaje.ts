@@ -2,8 +2,8 @@ import { estadoMensaje } from "./estadoMensaje";
 
 export class Mensaje{
     id: Number;
-    idUsuarioAutor: Number;
-    idUsuarioReceptor: Number;
+    nombreAutor: string;
+    nombreReceptor: string;
     mensaje: String;
     fecha: {
         año: number,
@@ -13,7 +13,7 @@ export class Mensaje{
     };
     estado: estadoMensaje;
 
-    constructor(id: Number, idUsuarioAutor: Number, idUsuarioReceptor: Number, mensaje: String, fecha: {
+    constructor(id: Number, nombreAutor: string, nombreReceptor: string, mensaje: String, fecha: {
         año: number,
         mes: number,
         dia: number,
@@ -22,8 +22,8 @@ export class Mensaje{
         this.id = id;
         this.estado = estado;
         this.fecha = fecha;
-        this.idUsuarioReceptor = idUsuarioReceptor;
-        this.idUsuarioAutor = idUsuarioAutor;
+        this.nombreReceptor = nombreReceptor;
+        this.nombreAutor = nombreAutor;
         this.mensaje = mensaje;
     }
 }

@@ -36,16 +36,16 @@ export class AccesoMensaje{
         this.collection.findOneAndDelete(filtro);
     }
 
-    public async chatEntre2Usuarios(id1: number, id2: number){
+    public async chatEntre2Usuarios(nombre1: string, nombre2: string){
         return await this.collection.find({$or: [
-            {"idUsuarioReceptor": id1, "idUsuarioAutor": id2},
-            {"idUsuarioReceptor": id2, "idUsuarioAutor": id1}]}).toArray();
+            {"nombreReceptor": nombre1, "nombreAutor": nombre2},
+            {"nombreAutor": nombre2, "nombreReceptor": nombre1}]}).toArray();
     }
 
-    public async mensajesSegunTexto(idUsuario: number, mensaje: String){
+    public async mensajesSegunTexto(nombre: string, mensaje: String){
         return await this.collection.find({$and: [
-                {$or: [{"idUsuarioReceptor": idUsuario}, 
-                    {"idUsuarioAutor": idUsuario}]},
+                {$or: [{"nombreReceptor": nombre}, 
+                    {"nombreAutor": nombre}]},
                 {"mensaje": {$regex: mensaje}}]}).toArray();
     }
 }

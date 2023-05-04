@@ -1,17 +1,15 @@
 import { estadoUsuario } from "./estadoUsuario";
 
 export class Usuario{
-    id: Number;
     nombre: String;
     avatar: String;
     estado: estadoUsuario;
-    contactosIDS: Array<Number>;
+    contactosNombres: Array<String>;
 
-    constructor(id: Number, nombre: String, avatar: String, estado: estadoUsuario, contactosIDS: Array<Number>){
+    constructor(nombre: String, avatar: String, estado: estadoUsuario, contactosNombres: Array<String>){
         this.avatar = avatar;
         this.estado = estado;
-        this.id = id;
         this.nombre = nombre;
-        this.contactosIDS = contactosIDS;
+        this.contactosNombres = contactosNombres;
     }
 }

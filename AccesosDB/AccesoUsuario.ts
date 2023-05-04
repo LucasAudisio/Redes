@@ -12,8 +12,8 @@ export class AccesoUsuario{
         this.collection = collection;
     }
 
-    public async getUsuario(id:number) {
-        const filtro = { id: id };
+    public async getUsuario(nombre: string) {
+        const filtro = { nombre: nombre };
         const usuario = await this.collection.findOne(filtro);
         return usuario;
     }
@@ -27,21 +27,29 @@ export class AccesoUsuario{
     }
 
     public async modificarUsuario(usuario: Usuario){
-        const filtro = { id: usuario.id };
+        const filtro = { nombre: usuario.nombre };
         this.collection.findOneAndReplace(filtro, JSON.parse(JSON.stringify(usuario)));
     }
 
-    public async borrarUsuario(id: number){
+    public async borrarUsuario(nombre: string){
         //eliminar de los contactos
-        const query = JSON.parse('{"$pull": {"contactosIDS": {"$eq":' + id + '}}}');
+        const query = JSON.parse('{"$pull": {"contactosNombres": {"$eq":' + nombre + '}}}');
         this.collection.updateMany({}, query);
         //eliminar de la base de datos
-        const filtro = { id: id };
+        const filtro = { nombre: nombre };
         this.collection.findOneAndDelete(filtro);
     }
 
-    public async buscarUsuarioNuevo(id: number, nombre: String){
-        const usuario = await this.collection.findOne({"id": id});
-        return await this.collection.find({$and: [{"nombre": {$regex: "e", $options: "i"}}, {"id": {$nin: usuario?.contactosIDS}}]}).toArray();
+    public async buscarUsuarioNuevo(nombreUsuario: string, nombreNuevo: string){
+        const usuario = await this.collection.findOne({"nombre": nombreUsuario});
+        return await this.collection.find({$and: [{"nombre": {$regex: "e", $options: "i"}}, {"id": {$nin: usuario?.contatctosNombres}}]}).toArray();
+    }
+
+    public async registrarse(nombre: string, contraseña: string){
+         
+    }
+
+    public async login(nombre: string, contraseña: string){
+
     }
 }
