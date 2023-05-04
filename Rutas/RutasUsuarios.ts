@@ -37,7 +37,7 @@ RutasUsuarios.post("/usuarios", (_req,_res) => {
             return;
         }
         else{
-            const usuarioTemp = new Usuario(_req.body.nombre, _req.body.avatar, _req.body.estado, _req.body.contactosNombres);
+            const usuarioTemp = new Usuario(_req.body.nombre, _req.body.contra, _req.body.avatar, _req.body.estado, _req.body.contactosNombres);
             accesoUsuario.subirUsuario(usuarioTemp);
             _res.json(usuarioTemp);
         }
@@ -66,7 +66,7 @@ RutasUsuarios.put("/usuarios/:nombre", (_req,_res) => {
             return;
         }
         else{
-            const usuarioTemp = new Usuario(_req.body.nombre, _req.body.avatar, 
+            const usuarioTemp = new Usuario(_req.body.nombre, _req.body.contra, _req.body.avatar, 
                 _req.body.estado, _req.body.contactosNombres);
             accesoUsuario.modificarUsuario(usuarioTemp);
             _res.json(usuarioTemp);
@@ -82,9 +82,12 @@ RutasUsuarios.patch("/usuarios/:nombre", (_req,_res) => {
             return;
         }
         else{
-            var usuarioTemp = new Usuario(v.nombre, v.avatar, v.estado, v.contactosNombres);
+            var usuarioTemp = new Usuario(v.nombre, v.contra, v.avatar, v.estado, v.contactosNombres);
             if(_req.body.contactosNombres){
                 usuarioTemp.contactosNombres = _req.body.contactosNombres;
+            }
+            if(_req.body.contra){
+                usuarioTemp.contra = _req.body.contra;
             }
             if(_req.body.avatar){
                 usuarioTemp.avatar = _req.body.avatar;
@@ -122,4 +125,41 @@ RutasUsuarios.get("/usuarios/:nombre/buscarNuevoUsuario/:nombreUsuarioNuevo", (_
     accesoUsuario.buscarUsuarioNuevo(_req.params.nombre, _req.params.nombreUsuarioNuevo).then((v) => {
         _res.json(v);
     });
+})
+
+// Registrarse
+RutasUsuarios.post("/usuarios/registrarse", (_req, _res) => {
+    accesoUsuario.getUsuario(_req.body.nombre).then((v) => {
+        console.log(v)
+        if(v != undefined){
+            _res.send("nombre de usuario ya en uso");
+        }
+        else{
+            accesoUsuario.registrarse(_req.body.nombre, _req.body.contra).then((b) => {
+                _res.json(b);
+            })
+        }
+    })    
+})
+
+// Login
+RutasUsuarios.get("/usuarios/login/:nombre", (_req, _res) => {
+    accesoUsuario.getUsuario(_req.params.nombre).then((pedro) => {
+        if(pedro){
+            accesoUsuario.login(_req.params.nombre, _req.body.contra).then((v) => {
+                console.log("v: " + v);
+                if(v){
+                    if(v == "todo bien"){
+                        _res.json(pedro);
+                    }
+                    else{
+                        _res.send(v);
+                    }
+                }
+            });
+        }
+        else {
+            _res.status(404).send();
+        }
+    })
 })

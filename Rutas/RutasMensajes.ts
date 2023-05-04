@@ -80,13 +80,13 @@ RutasMensajes.patch("/mensajes/:id", (_req,_res) => {
             return;
         }
         else{
-            var mensajeTemp = new Mensaje(v.id, v.idUsuarioAutor, v.idUsuarioReceptor, v.mensaje,
+            var mensajeTemp = new Mensaje(v.id, v.nombreAutor, v.nombreReceptor, v.mensaje,
                  v.fecha, v.estado);
-            if(_req.body.idUsuarioAutor){
-                mensajeTemp.idUsuarioAutor = _req.body.idUsuarioAutor;
+            if(_req.body.nombreAutor){
+                mensajeTemp.nombreAutor = _req.body.nombreAutor;
             }
-            if(_req.body.idUsuarioReceptor){
-                mensajeTemp.idUsuarioReceptor = _req.body.idUsuarioReceptor;
+            if(_req.body.nombreReceptor){
+                mensajeTemp.nombreReceptor = _req.body.nombreReceptor;
             }
             if(_req.body.mensaje){
                 mensajeTemp.mensaje = _req.body.mensaje;

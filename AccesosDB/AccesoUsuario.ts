@@ -1,5 +1,11 @@
 import { Collection, Db, FindCursor } from "mongodb";
+import { estadoUsuario } from "../estadoUsuario";
 import { Usuario } from "../Usuario";
+import { createHash } from 'node:crypto'
+
+function sha256(content: string) {  
+    return createHash('sha256').update(content).digest('hex')
+}
 
 export class AccesoUsuario{
     url: String;
@@ -46,10 +52,25 @@ export class AccesoUsuario{
     }
 
     public async registrarse(nombre: string, contraseña: string){
-         
+        const usuario = new Usuario(nombre, sha256(contraseña), "", estadoUsuario.Desconectado, new Array<String>);
+        await this.collection.insertOne(usuario);
+        return usuario;
     }
 
     public async login(nombre: string, contraseña: string){
+        const v = await this.getUsuario(nombre);
 
+        if(v != undefined){
+            console.log("v2: " + v.contra)
+            if(v.contra == sha256(contraseña)){
+                return "todo bien";
+            }
+            else{
+                return "contraseña incorrecta";
+            }
+        }
+        else{
+            return "usuario no encontrado";
+        }
     }
 }
