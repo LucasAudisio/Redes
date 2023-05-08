@@ -1,7 +1,7 @@
 import { Collection, Db, FindCursor } from "mongodb";
 import { estadoUsuario } from "../estadoUsuario";
 import { Usuario } from "../Usuario";
-import { createHash } from 'node:crypto'
+import { createHash } from 'node:crypto';
 
 function sha256(content: string) {  
     return createHash('sha256').update(content).digest('hex')
@@ -61,7 +61,6 @@ export class AccesoUsuario{
         const v = await this.getUsuario(nombre);
 
         if(v != undefined){
-            console.log("v2: " + v.contra)
             if(v.contra == sha256(contraseña)){
                 return "todo bien";
             }

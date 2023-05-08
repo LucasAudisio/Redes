@@ -3,6 +3,9 @@ import { Usuario } from '../Usuario';
 import { AccesoUsuario } from '../AccesosDB/AccesoUsuario';
 import { MongoClient } from 'mongodb';
 import { AccesoMensaje } from '../AccesosDB/AccesoMensaje';
+import { JsonObject } from 'swagger-ui-express';
+import { generarClave } from '../jwtVerification';
+import { verificarClave } from '../jwtVerification';
 
 const url: string = "mongodb://localhost:27017/Chat";
 const client = new MongoClient(url);
@@ -16,21 +19,22 @@ var accesoMensaje: AccesoMensaje = new AccesoMensaje(url, database, database.col
 export const RutasUsuarios = Router();
 
 //lista de usuarios
-RutasUsuarios.get("/usuarios", (_req,_res) => {
+RutasUsuarios.get("/usuarios", verificarClave,(_req,_res) => {
+    console.log("se llego")
     accesoUsuario.getUsuarios().then((v)=>{
         _res.send(v);
     })
 })
   
 //datos del usuario segun id
-RutasUsuarios.get("/usuarios/:nombre", (_req,_res) => {
+RutasUsuarios.get("/usuarios/:nombre", verificarClave, (_req,_res) => {
     accesoUsuario.getUsuario(_req.params.nombre).then((v)=>{
         _res.send(v);
     })
 })
   
 //subir nuevo usuario
-RutasUsuarios.post("/usuarios", (_req,_res) => {
+RutasUsuarios.post("/usuarios", verificarClave, (_req,_res) => {
     accesoUsuario.getUsuario(_req.body.nombre).then((v)=>{
         if(v != undefined){
             _res.send("no se pudo crear");
@@ -45,7 +49,7 @@ RutasUsuarios.post("/usuarios", (_req,_res) => {
 })
   
 //borrar usuario
-RutasUsuarios.delete("/usuarios/:nombre", (_req,_res) => {
+RutasUsuarios.delete("/usuarios/:nombre", verificarClave, (_req,_res) => {
     accesoUsuario.getUsuario(_req.params.nombre).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
@@ -59,7 +63,7 @@ RutasUsuarios.delete("/usuarios/:nombre", (_req,_res) => {
 })
 
 //modificar todo el usuario
-RutasUsuarios.put("/usuarios/:nombre", (_req,_res) => {
+RutasUsuarios.put("/usuarios/:nombre", verificarClave, (_req,_res) => {
     accesoUsuario.getUsuario(_req.params.nombre).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
@@ -75,7 +79,7 @@ RutasUsuarios.put("/usuarios/:nombre", (_req,_res) => {
 })
 
 //modificar usuario
-RutasUsuarios.patch("/usuarios/:nombre", (_req,_res) => {
+RutasUsuarios.patch("/usuarios/:nombre", verificarClave, (_req,_res) => {
     accesoUsuario.getUsuario(_req.params.nombre).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
@@ -105,7 +109,7 @@ RutasUsuarios.patch("/usuarios/:nombre", (_req,_res) => {
 })
 
 //Recibir chat entre 2 ususarios
-RutasUsuarios.get("/usuarios/:nombre1/:nombre2/recibirChat", (_req, _res) =>{
+RutasUsuarios.get("/usuarios/:nombre1/:nombre2/recibirChat", verificarClave, (_req, _res) =>{
     accesoMensaje.chatEntre2Usuarios(_req.params.nombre1, _req.params.nombre2)
         .then((v) => {
             _res.json(v);
@@ -113,7 +117,7 @@ RutasUsuarios.get("/usuarios/:nombre1/:nombre2/recibirChat", (_req, _res) =>{
 })
 
 //Buscar mensaje segun el texto
-RutasUsuarios.get("/usuarios/:nombre/buscarMensaje/:mensaje", (_req, _res) => {
+RutasUsuarios.get("/usuarios/:nombre/buscarMensaje/:mensaje", verificarClave, (_req, _res) => {
     accesoMensaje.mensajesSegunTexto(_req.params.nombre, _req.params.mensaje)
       .then((v) => {
         _res.json(v);
@@ -121,22 +125,23 @@ RutasUsuarios.get("/usuarios/:nombre/buscarMensaje/:mensaje", (_req, _res) => {
 })
 
 //Buscar usuario que no este en contactos
-RutasUsuarios.get("/usuarios/:nombre/buscarNuevoUsuario/:nombreUsuarioNuevo", (_req, _res) =>{
+RutasUsuarios.get("/usuarios/:nombre/buscarNuevoUsuario/:nombreUsuarioNuevo",  verificarClave,(_req, _res) =>{
     accesoUsuario.buscarUsuarioNuevo(_req.params.nombre, _req.params.nombreUsuarioNuevo).then((v) => {
         _res.json(v);
     });
 })
 
 // Registrarse
-RutasUsuarios.post("/usuarios/registrarse", (_req, _res) => {
-    accesoUsuario.getUsuario(_req.body.nombre).then((v) => {
-        console.log(v)
+RutasUsuarios.post("/usuarios/registrarse/:nombre", (_req, _res) => {
+    accesoUsuario.getUsuario(_req.params.nombre).then((v) => {
         if(v != undefined){
             _res.send("nombre de usuario ya en uso");
         }
         else{
-            accesoUsuario.registrarse(_req.body.nombre, _req.body.contra).then((b) => {
-                _res.json(b);
+            accesoUsuario.registrarse(_req.params.nombre, _req.body.contra).then((b) => {
+                let respuesta: JsonObject = JSON.parse(JSON.stringify(b));
+                respuesta["claveJWT"] = generarClave(_req.params.nombre);
+                _res.json(respuesta);
             })
         }
     })    
@@ -147,10 +152,11 @@ RutasUsuarios.get("/usuarios/login/:nombre", (_req, _res) => {
     accesoUsuario.getUsuario(_req.params.nombre).then((pedro) => {
         if(pedro){
             accesoUsuario.login(_req.params.nombre, _req.body.contra).then((v) => {
-                console.log("v: " + v);
                 if(v){
                     if(v == "todo bien"){
-                        _res.json(pedro);
+                        let respuesta: JsonObject = JSON.parse(JSON.stringify(pedro));
+                        respuesta["claveJWT"] = generarClave(_req.params.nombre);
+                        _res.json(respuesta);
                     }
                     else{
                         _res.send(v);

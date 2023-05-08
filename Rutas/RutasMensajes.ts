@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Mensaje } from '../Mensaje';
 import { MongoClient } from 'mongodb';
 import { AccesoMensaje } from '../AccesosDB/AccesoMensaje';
+import { verificarClave } from '../jwtVerification';
 
 const url: string = "mongodb://localhost:27017/Chat";
 const client = new MongoClient(url);
@@ -13,21 +14,21 @@ var accesoMensaje: AccesoMensaje = new AccesoMensaje(url, database, database.col
 export const RutasMensajes = Router();
 
 //lista con los datos de todos los mensajes
-RutasMensajes.get("/mensajes", (_req,_res) => {
+RutasMensajes.get("/mensajes", verificarClave, (_req,_res) => {
     accesoMensaje.getMensajes().then((v)=>{
         _res.send(v);
     })
 })
 
 //datos del mensaje segun id
-RutasMensajes.get("/mensajes/:id", (_req,_res) => {
+RutasMensajes.get("/mensajes/:id", verificarClave, (_req,_res) => {
     accesoMensaje.getMensaje(Number(_req.params.id)).then((v)=>{
         _res.send(v);
     })
 })
 
 //subir nuevo mensaje
-RutasMensajes.post("/mensajes", (_req,_res) => {
+RutasMensajes.post("/mensajes", verificarClave, (_req,_res) => {
     accesoMensaje.getMensaje(Number(_req.body.id)).then((v)=>{
         if(v != undefined){
             _res.send("no se pudo crear");
@@ -43,7 +44,7 @@ RutasMensajes.post("/mensajes", (_req,_res) => {
 })
 
 //borrar mensaje
-RutasMensajes.delete("/mensajes/:id", (_req,_res) => {
+RutasMensajes.delete("/mensajes/:id", verificarClave, (_req,_res) => {
     accesoMensaje.getMensaje(Number(_req.params.id)).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
@@ -57,7 +58,7 @@ RutasMensajes.delete("/mensajes/:id", (_req,_res) => {
 })
 
 //modificar todo el mensaje
-RutasMensajes.put("/mensajes/:id", (_req,_res) => {
+RutasMensajes.put("/mensajes/:id", verificarClave, (_req,_res) => {
     accesoMensaje.getMensaje(Number(_req.params.id)).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
@@ -73,7 +74,7 @@ RutasMensajes.put("/mensajes/:id", (_req,_res) => {
 })
 
 //modificar mensaje
-RutasMensajes.patch("/mensajes/:id", (_req,_res) => {
+RutasMensajes.patch("/mensajes/:id", verificarClave, (_req,_res) => {
     accesoMensaje.getMensaje(Number(_req.params.id)).then((v)=>{
         if(v == undefined){
             _res.send("no existe");

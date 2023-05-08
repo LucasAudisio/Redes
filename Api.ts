@@ -11,6 +11,9 @@ const app: express.Application = express();
 
 const port = 3000;
 
+//clave jwt
+export let claveSecreta: string = "Mbapapu";
+
 //extensiones
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
