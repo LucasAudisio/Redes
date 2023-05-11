@@ -1,4 +1,4 @@
-import { Collection, Db, FindCursor } from "mongodb";
+import { Collection, Db, Filter, FindCursor } from "mongodb";
 import { estadoUsuario } from "../estadoUsuario";
 import { Usuario } from "../Usuario";
 import { createHash } from 'node:crypto';

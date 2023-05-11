@@ -20,7 +20,6 @@ export const RutasUsuarios = Router();
 
 //lista de usuarios
 RutasUsuarios.get("/usuarios", verificarClave,(_req,_res) => {
-    console.log("se llego")
     accesoUsuario.getUsuarios().then((v)=>{
         _res.send(v);
     })
@@ -70,7 +69,7 @@ RutasUsuarios.put("/usuarios/:nombre", verificarClave, (_req,_res) => {
             return;
         }
         else{
-            const usuarioTemp = new Usuario(_req.body.nombre, _req.body.contra, _req.body.avatar, 
+            const usuarioTemp: Usuario = new Usuario(_req.body.nombre, _req.body.contra, _req.body.avatar, 
                 _req.body.estado, _req.body.contactosNombres);
             accesoUsuario.modificarUsuario(usuarioTemp);
             _res.json(usuarioTemp);
@@ -86,7 +85,7 @@ RutasUsuarios.patch("/usuarios/:nombre", verificarClave, (_req,_res) => {
             return;
         }
         else{
-            var usuarioTemp = new Usuario(v.nombre, v.contra, v.avatar, v.estado, v.contactosNombres);
+            var usuarioTemp: Usuario = new Usuario(v.nombre, v.contra, v.avatar, v.estado, v.contactosNombres);
             if(_req.body.contactosNombres){
                 usuarioTemp.contactosNombres = _req.body.contactosNombres;
             }

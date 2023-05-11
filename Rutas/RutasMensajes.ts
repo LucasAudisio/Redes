@@ -10,7 +10,6 @@ const database = client.db("Chat");
 
 var accesoMensaje: AccesoMensaje = new AccesoMensaje(url, database, database.collection("Mensaje"))
 
-
 export const RutasMensajes = Router();
 
 //lista con los datos de todos los mensajes
@@ -103,4 +102,3 @@ RutasMensajes.patch("/mensajes/:id", verificarClave, (_req,_res) => {
         }
     })
 })
-
