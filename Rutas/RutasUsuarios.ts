@@ -131,15 +131,15 @@ RutasUsuarios.get("/usuarios/:nombre/buscarNuevoUsuario/:nombreUsuarioNuevo",  v
 })
 
 // Registrarse
-RutasUsuarios.post("/usuarios/registrarse/:nombre", (_req, _res) => {
-    accesoUsuario.getUsuario(_req.params.nombre).then((v) => {
+RutasUsuarios.post("/usuarios/registrarse/", (_req, _res) => {
+    accesoUsuario.getUsuario(_req.body.nombre).then((v) => {
         if(v != undefined){
             _res.send("nombre de usuario ya en uso");
         }
         else{
-            accesoUsuario.registrarse(_req.params.nombre, _req.body.contra).then((b) => {
+            accesoUsuario.registrarse(_req.body.nombre, _req.body.contra).then((b) => {
                 let respuesta: JsonObject = JSON.parse(JSON.stringify(b));
-                respuesta["claveJWT"] = generarClave(_req.params.nombre);
+                respuesta["claveJWT"] = generarClave(_req.body.nombre);
                 _res.json(respuesta);
             })
         }
@@ -147,14 +147,14 @@ RutasUsuarios.post("/usuarios/registrarse/:nombre", (_req, _res) => {
 })
 
 // Login
-RutasUsuarios.get("/usuarios/login/:nombre", (_req, _res) => {
-    accesoUsuario.getUsuario(_req.params.nombre).then((pedro) => {
+RutasUsuarios.post("/usuarios/login", (_req, _res) => {
+    accesoUsuario.getUsuario(_req.body.nombre).then((pedro) => {
         if(pedro){
-            accesoUsuario.login(_req.params.nombre, _req.body.contra).then((v) => {
+            accesoUsuario.login(_req.body.nombre, _req.body.contra).then((v) => {
                 if(v){
                     if(v == "todo bien"){
                         let respuesta: JsonObject = JSON.parse(JSON.stringify(pedro));
-                        respuesta["claveJWT"] = generarClave(_req.params.nombre);
+                        respuesta["claveJWT"] = generarClave(_req.body.nombre);
                         _res.json(respuesta);
                     }
                     else{
