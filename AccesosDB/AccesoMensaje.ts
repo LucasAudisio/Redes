@@ -14,7 +14,8 @@ export class AccesoMensaje{
 
     public async getMensaje(id:string) {
         var mensaje;
-        if(id.length == 25){
+        console.log(id.length)
+        if(id.length == 24){
             var o_id = new ObjectId(id);
             mensaje = await this.collection.findOne({'_id': o_id});
         }
@@ -38,7 +39,8 @@ export class AccesoMensaje{
     public async borrarMensaje(id: string){
         var o_id = new ObjectId(id);
         const filtro = { id: o_id };
-        this.collection.findOneAndDelete(filtro);
+        console.log(filtro)
+        await this.collection.findOneAndDelete(filtro);
     }
 
     public async chatEntre2Usuarios(nombre1: string, nombre2: string){
