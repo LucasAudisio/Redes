@@ -1,4 +1,4 @@
-import { Collection, Db } from "mongodb";
+import { Collection, Db, ObjectId } from "mongodb";
 import { Mensaje } from "../Mensaje";
 
 export class AccesoMensaje{
@@ -12,9 +12,12 @@ export class AccesoMensaje{
         this.collection = collection;
     }
 
-    public async getMensaje(id:number) {
-        const filtro = { id: id };
-        const mensaje = await this.collection.findOne(filtro);
+    public async getMensaje(id:string) {
+        var mensaje;
+        if(id.length == 25){
+            var o_id = new ObjectId(id);
+            mensaje = await this.collection.findOne({'_id': o_id});
+        }
         return mensaje;
     }
 
@@ -26,13 +29,15 @@ export class AccesoMensaje{
         this.collection.insertOne(JSON.parse(JSON.stringify(mensaje)));
     }
 
-    public async modificarMensaje(mensaje: Mensaje){
-        const filtro = { id: mensaje.id };
+    public async modificarMensaje(mensaje: Mensaje, id: string){
+        var o_id = new ObjectId(id);
+        const filtro = { id: o_id };
         this.collection.findOneAndReplace(filtro, JSON.parse(JSON.stringify(mensaje)));
     }
 
-    public async borrarMensaje(id: number){
-        const filtro = { id: id };
+    public async borrarMensaje(id: string){
+        var o_id = new ObjectId(id);
+        const filtro = { id: o_id };
         this.collection.findOneAndDelete(filtro);
     }
 

@@ -21,14 +21,15 @@ RutasMensajes.get("/mensajes", verificarClave, (_req,_res) => {
 
 //datos del mensaje segun id
 RutasMensajes.get("/mensajes/:_id", verificarClave, (_req,_res) => {
-    accesoMensaje.getMensaje(Number(_req.params._id)).then((v)=>{
-        _res.send(v);
+    accesoMensaje.getMensaje(_req.params._id).then((v)=>{
+        if(v) _res.send(v);
+        else _res.send("mensaje no encontrado")
     })
 })
 
 //subir nuevo mensaje
 RutasMensajes.post("/mensajes", verificarClave, (_req,_res) => {
-    accesoMensaje.getMensaje(Number(_req.body.id)).then((v)=>{
+    accesoMensaje.getMensaje(_req.body.id).then((v)=>{
         if(v != undefined){
             _res.send("no se pudo crear");
             return;
@@ -44,13 +45,13 @@ RutasMensajes.post("/mensajes", verificarClave, (_req,_res) => {
 
 //borrar mensaje
 RutasMensajes.delete("/mensajes/:_id", verificarClave, (_req,_res) => {
-    accesoMensaje.getMensaje(Number(_req.params._id)).then((v)=>{
+    accesoMensaje.getMensaje(_req.params._id).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
             return;
         }
         else{
-            accesoMensaje.borrarMensaje(Number(_req.params._id));
+            accesoMensaje.borrarMensaje(_req.params._id);
             _res.status(204).send();
         }
     })
@@ -58,7 +59,7 @@ RutasMensajes.delete("/mensajes/:_id", verificarClave, (_req,_res) => {
 
 //modificar todo el mensaje
 RutasMensajes.put("/mensajes/:_id", verificarClave, (_req,_res) => {
-    accesoMensaje.getMensaje(Number(_req.params._id)).then((v)=>{
+    accesoMensaje.getMensaje(_req.params._id).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
             return;
@@ -66,7 +67,7 @@ RutasMensajes.put("/mensajes/:_id", verificarClave, (_req,_res) => {
         else{
             const mensajeTemp = new Mensaje(_req.body.nombreAutor, _req.body.nombreReceptor,
                 _req.body.mensaje, _req.body.fecha, _req.body.estado);
-            accesoMensaje.modificarMensaje(mensajeTemp);
+            accesoMensaje.modificarMensaje(mensajeTemp, _req.params._id);
             _res.json(mensajeTemp);
         }
     })
@@ -74,7 +75,7 @@ RutasMensajes.put("/mensajes/:_id", verificarClave, (_req,_res) => {
 
 //modificar mensaje
 RutasMensajes.patch("/mensajes/:_id", verificarClave, (_req,_res) => {
-    accesoMensaje.getMensaje(Number(_req.params._id)).then((v)=>{
+    accesoMensaje.getMensaje(_req.params._id).then((v)=>{
         if(v == undefined){
             _res.send("no existe");
             return;
@@ -97,7 +98,7 @@ RutasMensajes.patch("/mensajes/:_id", verificarClave, (_req,_res) => {
             if(_req.body.estado){
                 mensajeTemp.estado = _req.body.estado;
             }
-            accesoMensaje.modificarMensaje(mensajeTemp);
+            accesoMensaje.modificarMensaje(mensajeTemp, _req.params._id);
             _res.json(mensajeTemp);
         }
     })

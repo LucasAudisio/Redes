@@ -9,7 +9,7 @@ import { RutasMensajes } from './Rutas/RutasMensajes';
 
 const app: express.Application = express();
 
-const port = 3000;
+const port = 3001;
 
 //clave jwt
 export let claveSecreta: string = "Mbapapu";
